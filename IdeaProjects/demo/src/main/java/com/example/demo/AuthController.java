@@ -21,9 +21,7 @@ public class AuthController {
         }
 
         // Создание нового пользователя
-        User newUser = new User();
-        newUser.setUsername(username);
-        newUser.setPassword(password); // В реальной ситуации пароль следует зашифровать перед сохранением
+        User newUser = new User(username, password);  // Используем конструктор с параметрами
         userRepository.save(newUser);
         return "Registration successful!";
     }
@@ -31,7 +29,6 @@ public class AuthController {
     // Получение списка всех пользователей
     @GetMapping("/users")
     public List<User> getAllUsers() {
-        // Преобразуем Iterable в List для работы с данным типом
         return (List<User>) userRepository.findAll();
     }
 

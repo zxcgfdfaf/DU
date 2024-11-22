@@ -13,6 +13,11 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();  // Используем BCrypt для шифрования паролей
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorizeRequests ->
@@ -20,29 +25,23 @@ public class SecurityConfig {
                                 .requestMatchers("/login", "/register").permitAll()  // Разрешаем доступ к этим страницам без аутентификации
                                 .anyRequest().authenticated()  // Все остальные страницы требуют аутентификации
                 )
-                .formLogin(form ->
-                        form
-                                .loginPage("/login")
-                                .defaultSuccessUrl("/home", false)
-                                .permitAll()
+                .formLogin(formLogin ->
+                        formLogin
+                                .loginPage("/login")  // Страница для входа
+                                .permitAll()  // Разрешаем всем посещение страницы входа без аутентификации
+                                .defaultSuccessUrl("/home", true)  // URL, на который перенаправляется после успешной аутентификации
                 )
                 .logout(logout ->
-                        logout.logoutUrl("/logout")
-                                .permitAll()
+                        logout
+                                .logoutRequestMatcher(new org.springframework.security.web.util.matcher.AntPathRequestMatcher("/logout"))  // Настройка URL-адреса для выхода
+                                .permitAll()  // Разрешаем всем выходить без аутентификации
                 )
-                .exceptionHandling(exceptions ->
-                        exceptions.authenticationEntryPoint((request, response, authException) ->
-                                response.sendRedirect("/login?error") // Обработка ошибок аутентификации
-                        )
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling
+                                .authenticationEntryPoint((request, response, authException) ->
+                                        response.sendRedirect("/login?error")  // URL, на который отправляется пользователь в случае аутентификации
+                                )
                 );
         return http.build();
     }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();  // Используем BCrypt для шифрования паролей
-    }
 }
-
-
-

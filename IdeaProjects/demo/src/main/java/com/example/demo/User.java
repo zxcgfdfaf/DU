@@ -1,25 +1,27 @@
 package com.example.demo;
 
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
+
+@Entity
 public class User {
+
     @Id
     private Long id;
     private String username;
     private String password;
 
     // Конструктор по умолчанию
-    public User() {
-    }
+    public User() {}
 
     // Конструктор с параметрами
-    public User(Long id, String username, String password) {
-        this.id = id;
+    public User(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
-    // Getters и Setters
+    // Геттеры и сеттеры
     public Long getId() {
         return id;
     }
